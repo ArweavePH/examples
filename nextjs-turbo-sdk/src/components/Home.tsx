@@ -61,7 +61,12 @@ const Home = () => {
   };
 
   useEffect(() => {
-    init();
+    if (connected) {
+      init();
+    } else {
+      setSigner(undefined);
+      setTurbo(undefined);
+    }
   }, [connected]);
 
   return (

@@ -1,5 +1,61 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+## Ardrive Turbo-SDK
+
+Install turbo-sdk and arweave wallet kit
+
+```bash
+npm install @ardrive/turbo-sdk arweave-wallet-kit
+```
+
+Checkout on how to use and setup arweave wallet kit
+
+- [Arweave Wallet Kit Documentation](https://docs.arweavekit.com/wallets/wallet-kit/setup) - lSetup the Arweave Wallet Kit component library.
+
+Sample snippet for initiating signer and turbofactory instance
+
+```javascript
+const signerInstance = new ArconnectSigner(window.arweaveWallet);
+// Setting a public key is necessary to proceed with any wallet interaction, such as signing data.
+if (!signerInstance.publicKey) {
+  await signerInstance.setPublicKey();
+}
+
+const turboInstance = TurboFactory.authenticated({
+  signer: signerInstance,
+});
+```
+
+Sample snippet for upload using turbo-sdk and arbundles for creating signed DataItem
+
+```javascript
+const signedDataItem = createData(
+  // The data to be signed is a JSON string
+  JSON.stringify({ hello: "World" }),
+  // The signer to be used to sign the data
+  signer,
+  {
+    tags: [
+      { name: "Content-Type", value: "application/json" },
+      { name: "App-Name", value: "XendevPH-Cohort-0" },
+      { name: "App-Version", value: "0.1.0" },
+      {
+        name: "Title",
+        value: "Rickroll",
+      },
+    ],
+  }
+);
+
+await signedDataItem.sign(signer);
+
+const uploadResult = await turbo.uploadSignedDataItem({
+  dataItemStreamFactory: () => signedDataItem.getRaw(),
+  dataItemSizeFactory: () => signedDataItem.getRaw().length,
+  signal: AbortSignal.timeout(10_000),
+});
+```
+
 ## Getting Started
 
 First, run the development server:
